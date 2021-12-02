@@ -47,10 +47,10 @@ func (wt *windowTrackingIntRetriever) next() (int, error) {
 	wt.offset++
 	return v, nil
 }
+
 func (wt *windowTrackingIntRetriever) start() error {
 	for i := 0; i < len(wt.windows)-1; i++ {
-		_, err := wt.next()
-		if err != nil {
+		if _, err := wt.next(); err != nil {
 			return err
 		}
 	}
@@ -62,11 +62,10 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("error opening input file %s", err))
 	}
-	s := bufio.NewScanner(f)
-	ir := scannerIntRetriever{s}
+	defer f.Close()
 	wt := &windowTrackingIntRetriever{
 		windows: make([]int, 3),
-		ir:      ir,
+		ir:      scannerIntRetriever{bufio.NewScanner(f)},
 	}
 	wt.start()
 	count, err := countDecreases(wt)
