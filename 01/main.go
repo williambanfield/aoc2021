@@ -48,13 +48,11 @@ func (wt *windowTrackingIntRetriever) next() (int, error) {
 	return v, nil
 }
 func (wt *windowTrackingIntRetriever) start() error {
-	_, err := wt.next()
-	if err != nil {
-		return err
-	}
-	_, err = wt.next()
-	if err != nil {
-		return err
+	for i := 0; i < len(wt.windows)-1; i++ {
+		_, err := wt.next()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
