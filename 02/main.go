@@ -15,6 +15,10 @@ const (
 	forward
 )
 
+type directionInput struct {
+	direction, val int
+}
+
 func main() {
 	in, err := parseInput("input")
 	if err != nil {
@@ -26,13 +30,13 @@ func main() {
 	fmt.Println(p2)
 }
 
-func parseInput(fname string) ([][2]int, error) {
+func parseInput(fname string) ([]directionInput, error) {
 	f, err := os.Open(fname)
 	if err != nil {
 		return nil, err
 	}
 	s := bufio.NewScanner(f)
-	vals := [][2]int{}
+	d := []directionInput{}
 	for s.Scan() {
 		strs := strings.Split(s.Text(), " ")
 		if len(strs) != 2 {
@@ -44,42 +48,42 @@ func parseInput(fname string) ([][2]int, error) {
 		}
 		switch strs[0] {
 		case "up":
-			vals = append(vals, [2]int{val, up})
+			d = append(d, directionInput{direction: up, val: val})
 		case "down":
-			vals = append(vals, [2]int{val, down})
+			d = append(d, directionInput{direction: down, val: val})
 		case "forward":
-			vals = append(vals, [2]int{val, forward})
+			d = append(d, directionInput{direction: forward, val: val})
 		}
 	}
-	return vals, nil
+	return d, nil
 }
 
-func part1(vals [][2]int) int {
+func part1(in []directionInput) int {
 	var vertical, horizontal int
-	for i := range vals {
-		switch vals[i][1] {
+	for _, d := range in {
+		switch d.direction {
 		case up:
-			vertical -= vals[i][0]
+			vertical -= d.val
 		case down:
-			vertical += vals[i][0]
+			vertical += d.val
 		case forward:
-			horizontal += vals[i][0]
+			horizontal += d.val
 		}
 	}
 	return horizontal * vertical
 }
 
-func part2(vals [][2]int) int {
+func part2(in []directionInput) int {
 	var depth, horizontal, aim int
-	for i := range vals {
-		switch vals[i][1] {
+	for _, d := range in {
+		switch d.direction {
 		case up:
-			aim -= vals[i][0]
+			aim -= d.val
 		case down:
-			aim += vals[i][0]
+			aim += d.val
 		case forward:
-			depth += vals[i][0] * aim
-			horizontal += vals[i][0]
+			depth += d.val * aim
+			horizontal += d.val
 		}
 	}
 	return horizontal * depth
